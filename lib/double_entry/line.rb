@@ -23,7 +23,7 @@ module DoubleEntry
   # balance of an account. eg:
   #
   # ```sql
-  # SELECT * FROM `lines` WHERE scope = ? AND account = ? ORDER BY id DESC LIMIT 1
+  # SELECT * FROM `lines` WHERE scope = ? AND account = ? ORDER BY created_at DESC LIMIT 1
   # ```
   #
   # ### lines_scope_account_created_at_idx
@@ -35,7 +35,7 @@ module DoubleEntry
   # Used for querying historic balances:
   #
   # ```sql
-  # SELECT * FROM `lines` WHERE scope = ? AND account = ? AND created_at < ? ORDER BY id DESC LIMIT 1
+  # SELECT * FROM `lines` WHERE scope = ? AND account = ? AND created_at < ? ORDER BY created_at DESC LIMIT 1
   # ```
   #
   # And for reporting on account changes over a time period:
@@ -55,6 +55,7 @@ module DoubleEntry
   # by account, or account and code, over a particular period.
   #
   class Line < ActiveRecord::Base
+    has_paper_trail
     belongs_to :detail, polymorphic: true, required: false
     has_many :metadata, class_name: 'DoubleEntry::LineMetadata' unless -> { DoubleEntry.config.json_metadata }
     scope :credits, -> { where('amount > 0') }
